@@ -12,7 +12,10 @@ import java.util.List;
 public class VmMapper {
 
     Vm mapToDomainEntity(VmJpaEntity vm, List<ActivityJpaEntity> activities) {
-        return Vm.withId(new Vm.VmId(vm.getId()), mapToActivityWindow(activities));
+
+        Vm.State state = Vm.State.valueOf(vm.getState());
+
+        return Vm.withId(new Vm.VmId(vm.getId()), state, mapToActivityWindow(activities));
     }
 
     ActivityWindow mapToActivityWindow(List<ActivityJpaEntity> activities) {
@@ -26,5 +29,14 @@ public class VmMapper {
         }
 
         return new ActivityWindow(mappedActivities);
+    }
+
+    ActivityJpaEntity mapToJpaEntity(Activity activity) {
+        return new ActivityJpaEntity(
+                activity.getId() == null ? null : activity.getId().getValue(),
+                activity.getTimestamp(),
+                activity.getVmId().getVmId(),
+                activity.getAction().name()
+        );
     }
 }

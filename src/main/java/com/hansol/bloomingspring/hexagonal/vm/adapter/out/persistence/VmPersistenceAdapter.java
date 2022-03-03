@@ -2,6 +2,7 @@ package com.hansol.bloomingspring.hexagonal.vm.adapter.out.persistence;
 
 import com.hansol.bloomingspring.hexagonal.vm.application.port.out.LoadVmPort;
 import com.hansol.bloomingspring.hexagonal.vm.application.port.out.UpdateVmStatePort;
+import com.hansol.bloomingspring.hexagonal.vm.domain.Activity;
 import com.hansol.bloomingspring.hexagonal.vm.domain.Vm;
 import lombok.RequiredArgsConstructor;
 
@@ -27,5 +28,14 @@ public class VmPersistenceAdapter implements LoadVmPort, UpdateVmStatePort {
                 activityRepository.findByVmSince(vmId.getVmId(), baselineDate);
 
         return vmMapper.mapToDomainEntity(vm, activities);
+    }
+
+    @Override
+    public void updateActivities(Vm vm) {
+        for (Activity activity : vm.getActivityWindow().getActivities()) {
+            if (activity.getId() == null) {
+                activityRepository.save(vmMapper.mapToJpaEntity(activity));
+            }
+        }
     }
 }

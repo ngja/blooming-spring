@@ -3,6 +3,7 @@ package com.hansol.bloomingspring.hexagonal.vm.application.service;
 import com.hansol.bloomingspring.hexagonal.vm.application.port.in.StartVmCommand;
 import com.hansol.bloomingspring.hexagonal.vm.application.port.in.StartVmUseCase;
 import com.hansol.bloomingspring.hexagonal.vm.application.port.out.LoadVmPort;
+import com.hansol.bloomingspring.hexagonal.vm.application.port.out.UpdateVmStatePort;
 import com.hansol.bloomingspring.hexagonal.vm.application.port.out.VmLock;
 import com.hansol.bloomingspring.hexagonal.vm.domain.Vm;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class StartVmService implements StartVmUseCase {
 
     private final LoadVmPort loadVmPort;
     private final VmLock vmLock;
+    private final UpdateVmStatePort updateVmStatePort;
 
     @Override
     public boolean startVm(StartVmCommand command) {
@@ -26,8 +28,14 @@ public class StartVmService implements StartVmUseCase {
                 .orElseThrow(() -> new IllegalStateException("expected source account ID not to be empty"));
 
         vmLock.lockVm(vmId);
+        if (!vm.start()) {
+            vmLock.releaseVm(vmId);
+            return false;
+        }
 
+        updateVmStatePort.updateActivities(vm);
 
-        return false;
+        vmLock.releaseVm(vmId);
+        return true;
     }
 }
