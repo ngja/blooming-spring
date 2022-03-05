@@ -13,7 +13,8 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @PersistenceAdapter
-public class AccountPersistenceAdapter implements LoadAccountPort, UpdateAccountStatePort {
+public class AccountPersistenceAdapter implements
+        LoadAccountPort, UpdateAccountStatePort {
 
     private final SpringDataAccountRepository accountRepository;
     private final ActivityRepository activityRepository;

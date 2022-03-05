@@ -29,6 +29,13 @@ class AccountMapper {
 
     }
 
+    AccountJpaEntity mapToJpaEntity(String name) {
+        return new AccountJpaEntity(
+                null,
+                name
+        );
+    }
+
     ActivityWindow mapToActivityWindow(List<ActivityJpaEntity> activities) {
         List<Activity> mappedActivities = new ArrayList<>();
 
