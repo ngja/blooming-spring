@@ -11,7 +11,6 @@ import java.util.Optional;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Vm {
 
-    @Getter
     private final VmId id;
 
     @Getter
