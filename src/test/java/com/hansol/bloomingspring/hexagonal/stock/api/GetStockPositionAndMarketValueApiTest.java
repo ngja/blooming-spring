@@ -2,6 +2,7 @@ package com.hansol.bloomingspring.hexagonal.stock.api;
 
 import com.github.javafaker.Faker;
 import com.hansol.bloomingspring.hexagonal.stock.domain.model.StockPosition;
+import com.hansol.bloomingspring.hexagonal.stock.domain.service.GetStockMarketValueService;
 import com.hansol.bloomingspring.hexagonal.stock.domain.service.GetStockPositionService;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,8 @@ public class GetStockPositionAndMarketValueApiTest {
     void get() {
         // arrange
         String symbol = "aapl";
-        StockPosition fakeStockPosition = getFakerStockPosition(symbol);
         String user = "peterpan";
+        StockPosition fakeStockPosition = getFakerStockPosition(user, symbol);
         when(getStockPositionService.get(user, symbol)).thenReturn(Mono.just(fakeStockPosition));
         BigDecimal fakeMarketPrice = BigDecimal.valueOf(faker.number().randomDouble(4, 0, 1000000));
         when(getStockMarketValueService.get(symbol, fakeStockPosition.getQuantity())).thenReturn(Mono.just(fakeMarketPrice));
@@ -93,8 +94,9 @@ public class GetStockPositionAndMarketValueApiTest {
                 .expectStatus().isUnauthorized();
     }
 
-    private StockPosition getFakerStockPosition(String symbol) {
+    private StockPosition getFakerStockPosition(String user, String symbol) {
         return new StockPosition(
+                user,
                 symbol,
                 BigDecimal.valueOf(faker.number().randomDouble(2, 0, 10000)),
                 faker.currency().code(),
